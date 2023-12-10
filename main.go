@@ -123,7 +123,7 @@ func ValidatePayload(r *http.Request, secretToken []byte) (payload []byte, err e
 		payload = []byte(form.Get(payloadFormParam))
 
 	default:
-		return nil, fmt.Errorf("Webhook request has unsupported Content-Type %q", ct)
+		return nil, fmt.Errorf("webhook request has unsupported Content-Type %q", ct)
 	}
 
 	// Only validate the signature if a secret token exists. This is intended for
@@ -131,9 +131,7 @@ func ValidatePayload(r *http.Request, secretToken []byte) (payload []byte, err e
 	if len(secretToken) > 0 {
 		sig := r.Header.Get(signatureHeader)
 		if err := ValidateSignature(sig, body, secretToken); err != nil {
-			fmt.Errorf("signature does not validate: %v", err)
-
-			return nil, err
+			return nil, fmt.Errorf("signature does not validate: %v", err)
 		}
 	}
 
