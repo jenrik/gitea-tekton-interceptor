@@ -9,11 +9,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:alpine
+FROM golang:1.21-alpine AS builder
 RUN mkdir /app
 ADD . /app/
 WORKDIR /app
 RUN go build -o main .
-RUN adduser -S -D -H -h /app appuser
-USER appuser
-CMD ["./main"]
+
+FROM scratch AS runtime
+COPY --from=builder /app/main /main
+CMD []
+ENTRYPOINT ["/main"]
