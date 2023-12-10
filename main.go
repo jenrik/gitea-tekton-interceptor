@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"hash"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -46,7 +46,6 @@ const (
 )
 
 // DeliveryID returns the unique delivery ID of webhook request r.
-//
 func DeliveryID(r *http.Request) string {
 	return r.Header.Get(deliveryIDHeader)
 }
@@ -88,13 +87,12 @@ func messageMAC(signature string) ([]byte, func() hash.Hash, error) {
 // signature is the gitea hash signature delivered in the X-Gitea-Signature header.
 // payload is the JSON payload sent by gitea Webhooks.
 // secretToken is the gitea Webhook secret token.
-//
 func ValidateSignature(signature string, payload, secretToken []byte) error {
 	messageMAC, hashFunc, err := messageMAC(signature)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("signature=%o", messageMAC )
+	fmt.Printf("signature=%o", messageMAC)
 	if !checkMAC(payload, messageMAC, secretToken, hashFunc) {
 		return errors.New("payload signature check failed")
 	}
@@ -107,7 +105,7 @@ func ValidatePayload(r *http.Request, secretToken []byte) (payload []byte, err e
 	switch ct := r.Header.Get("Content-Type"); ct {
 	case "application/json":
 		var err error
-		if body, err = ioutil.ReadAll(r.Body); err != nil {
+		if body, err = io.ReadAll(r.Body); err != nil {
 			return nil, err
 		}
 
@@ -121,7 +119,7 @@ func ValidatePayload(r *http.Request, secretToken []byte) (payload []byte, err e
 		const payloadFormParam = "payload"
 
 		var err error
-		if body, err = ioutil.ReadAll(r.Body); err != nil {
+		if body, err = io.ReadAll(r.Body); err != nil {
 			return body, err
 		}
 
@@ -142,7 +140,7 @@ func ValidatePayload(r *http.Request, secretToken []byte) (payload []byte, err e
 	if len(secretToken) > 0 {
 		sig := r.Header.Get(signatureHeader)
 		if err := ValidateSignature(sig, body, secretToken); err != nil {
-			fmt.Errorf("signature does not validate: %v",err)
+			fmt.Errorf("signature does not validate: %v", err)
 
 			return nil, err
 		}
