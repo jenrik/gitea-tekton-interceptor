@@ -27,20 +27,11 @@ import (
 	"os"
 )
 
-var Version = "0.1.1"
-
 const (
 	// Environment variable containing gitea secret token
 	envSecret = "GITEA_SECRET_TOKEN"
-	// sha1Prefix is the prefix used by gitea before the HMAC hexdigest.
-	sha1Prefix = "sha1"
-	// sha256Prefix and sha512Prefix are provided for future compatibility.
-	sha256Prefix = "sha256"
-	sha512Prefix = "sha512"
 	// signatureHeader is the Gitea header key used to pass the HMAC hexdigest.
 	signatureHeader = "X-Gitea-Signature"
-	// eventTypeHeader is the Gitea header key used to pass the event type.
-	eventTypeHeader = "X-Gitea-Event"
 	// deliveryIDHeader is the Gitea header key used to pass the unique ID for the webhook event.
 	deliveryIDHeader = "X-Gitea-Delivery"
 )
